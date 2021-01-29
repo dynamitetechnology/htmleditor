@@ -1,49 +1,68 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Online real-time HTML Editor</title>
-		<script type="text/javascript">
-    var editorHTML=
-'<html>'+
-'<head>'+
-'<meta charset="utf-8" />'+
-'<title></title>'+
-'<link href="style.css" type="text/css" rel="stylesheet" />'+
-'</head>'+
-'<body onload="document.forms[0].ta.focus();document.forms[0].ta.select();">'+
-'<form>'+
-'<textarea name="ta" wrap="hard" spellcheck="false">'+
-'<\/textarea>'+
-'</form>'+
-'</body>'+
-'</html>';
 
-var defaultCode='<h3>Welcome to our online real-time HTML editor!</h3>\n'+
-'<p>Type some HTML code in the textarea above, and it will appear in the frame below.</p>\n'+
-'<p>Webmaster and SEO tool by <a href="http://www.cloxy.net/" target="_top">Cloxy Tools</a>.</p>';
+<!DOCTYPE html>
+<html>
+<head>
+<title>Real-time HTML Editor</title>
+<script type="text/javascript">
 
-function init() {
-	window.editor.document.open();
-	window.editor.document.write(editorHTML);
-	window.editor.document.close();
-	window.editor.document.forms[0].ta.value=defaultCode;
-	window.editor.document.forms[0].ta.onkeyup=update;
-	window.editor.document.forms[0].ta.onmouseup=update;
-	update();
+var editboxHTML = 
+'<html class="expand close">' +
+'<head>' +
+'<style type="text/css">' +
+'.expand { width: 100%; height: 100%; }' +
+'.close { border: none; margin: 0px; padding: 0px; }' +
+'html,body { overflow: hidden; }' +
+'<\/style>' +
+'<\/head>' +
+'<body class="expand close" onload="document.f.ta.focus(); document.f.ta.select();">' +
+'<form class="expand close" name="f">' +
+'<textarea class="expand close" style="background: #def;" name="ta" wrap="hard" spellcheck="false">' +
+'<\/textarea>' +
+'<\/form>' +
+'<\/body>' +
+'<\/html>';
+
+var defaultStuff = '<h3>Welcome to the real-time HTML editor!<\/h3>\n' +
+'<p>Type HTML in the textarea above, and it will magically appear in the frame below.<\/p>';
+
+// I don't want this stuff to appear in the box at the top because I feel it's likely to be distracting.
+var extraStuff = '<div style="position:absolute; margin:.3em; bottom:0em; right:0em;"><small>\n  Created by <a href="http://www.squarefree.com/" target="_top">Jesse Ruderman<\/a> and hosted by <a href="http://www.dreamhost.com/rewards.cgi?jesseruderman" target="_top">DreamHost<\/a>.\n<\/small><\/div>';
+
+var old = '';
+         
+function init()
+{
+  window.editbox.document.write(editboxHTML);
+  window.editbox.document.close();
+  window.editbox.document.f.ta.value = defaultStuff;
+  update();
 }
 
-function update() {
-	window.result.document.open();
-	window.result.document.write(window.editor.document.forms[0].ta.value);
-	window.result.document.close();
+function update()
+{
+  var textarea = window.editbox.document.f.ta;
+  var d = dynamicframe.document; 
+
+  if (old != textarea.value) {
+    old = textarea.value;
+    d.open();
+    d.write(old);
+    if (old.replace(/[\r\n]/g,'') == defaultStuff.replace(/[\r\n]/g,''))
+      d.write(extraStuff);
+    d.close();
+  }
+
+  window.setTimeout(update, 150);
 }
-    
-    </script>
-	</head>
-	<frameset rows="50%,*" onload="init();">
-		<frame name="editor" />
-		<frame name="result" />
-	</frameset>
+
+</script>
+</head>
+
+<frameset resizable="yes" rows="50%,*" onload="init();">
+  <!-- about:blank confuses opera, so use javascript: URLs instead -->
+  <frame name="editbox" src="javascript:'';">
+  <frame name="dynamicframe" src="javascript:'';">
+</frameset>
+
 </html>
