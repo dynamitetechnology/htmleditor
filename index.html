@@ -1,50 +1,88 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Online real-time HTML Editor</title>
-		<script type="text/javascript">
-                  var editorHTML=
-'<html>'+
-'<head>'+
-'<meta charset="utf-8" />'+
-'<title></title>'+
-'<link href="style.css" type="text/css" rel="stylesheet" />'+
-'</head>'+
-'<body onload="document.forms[0].ta.focus();document.forms[0].ta.select();">'+
-'<form>'+
-'<textarea height = "100%"
-    width="100%" name="ta" wrap="hard" spellcheck="false">'+
-'<\/textarea>'+
-'</form>'+
-'</body>'+
-'</html>';
+<!DOCTYPE html>
+<html>
+<head>
+<title>Real-time HTML Editor</title>
+<script type="text/javascript">
 
-var defaultCode='<h3>Welcome to our online real-time HTML editor!</h3>\n'+
-'<p>Type some HTML code in the textarea above, and it will appear in the frame below.</p>\n'+
-'<p>Webmaster and SEO tool by <a href="http://www.cloxy.net/" target="_top">Cloxy Tools</a>.</p>';
+var htmlH = 
+	'<html class="expand close">' +
+	'<head>' +
+	'<style type="text/css">' +
+	'.expand { width: 100%; height: 100%; }' +
+	'.close { border: none; margin: 0px; padding: 0px; }' +
+	'html,body { overflow: hidden;}' +
+	'<\/style>' +
+	'<\/head>' +
+	'<body class="expand close" onload="document.f.ta.focus(); document.f.ta.select();">' +
+	'<form class="expand close" name="f">' +
+	'<textarea class="expand close" style="background: #def; font: 14pt Monospace;" name="ta" wrap="hard" spellcheck="false">' +
+	'<\/textarea>' +
+	'<\/form>' +
+	'<\/body>' +
+	'<\/html>';
 
-function init() {
-	window.editor.document.open();
-	window.editor.document.write(editorHTML);
-	window.editor.document.close();
-	window.editor.document.forms[0].ta.value=defaultCode;
-	window.editor.document.forms[0].ta.onkeyup=update;
-	window.editor.document.forms[0].ta.onmouseup=update;
-	update();
+var htmlC = 
+	'<html class="expand close">' +
+	'<head>' +
+	'<style type="text/css">' +
+	'.expand { width: 100%; height: 100%; }' +
+	'.close { border: none; margin: 0px; padding: 0px; }' +
+	'html,body { overflow: hidden;}' +
+	'<\/style>' +
+	'<\/head>' +
+	'<body class="expand close">' +
+	'<form class="expand close" name="f">' +
+	'<textarea class="expand close" style="background: #fde; font: 14pt Monospace;" name="ta" wrap="hard" spellcheck="false">' +
+	'<\/textarea>' +
+	'<\/form>' +
+	'<\/body>' +
+	'<\/html>';
+
+var defaultH = '<!-- add HTML below -->\n<h1>Hello Word!</h1>';
+var defaultC = '/* add CSS below */\nh1 { color: green; }';
+
+var oldH = '';
+var oldC = '';
+
+function init()
+{
+  window.boxH.document.write(htmlH);
+  window.boxH.document.close();
+  window.boxH.document.f.ta.value = defaultH;
+  window.boxC.document.write(htmlC);
+  window.boxC.document.close();
+  window.boxC.document.f.ta.value = defaultC;
+  refresh();
 }
 
-function update() {
-	window.result.document.open();
-	window.result.document.write(window.editor.document.forms[0].ta.value);
-	window.result.document.close();
+function refresh()
+{
+  var textH = window.boxH.document.f.ta;
+  var textC = window.boxC.document.f.ta;
+  var d = window.output.document; 
+
+  if(oldH != textH.value || oldC != textC.value) 
+  {
+    oldH = textH.value;
+    oldC = textC.value;
+    d.open();
+    d.write('<style type="text/css">\n' + oldC + '\n<\/style>\n\n' + oldH);
+    d.close();
+  }
+
+  window.setTimeout(refresh, 150);
 }
-                  
-                  </script>
-	</head>
-	<frameset rows="50%,*" onload="init();">
-		<frame name="editor" />
-		<frame name="result" />
-	</frameset>
+
+</script>
+</head>
+
+<frameset resizable="yes" rows="50%,*" onload="init();">
+  <frameset resizable="yes" cols="66%,*">
+  	<frame name="boxH" src="javascript:'';">
+  	<frame name="boxC" src="javascript:'';">
+  </frameset>
+  <frame name="output" src="javascript:'';">
+</frameset>
+
 </html>
